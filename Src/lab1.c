@@ -1,7 +1,7 @@
 #include <stm32f0xx_hal.h>
 #include "main.h"
 
-void lab1_main(void) {
+int lab1_main(void) {
     HAL_Init(); // Reset of all peripherals, init the Flash and Systick
     SystemClock_Config(); //Configure the system clock
     /* This example uses HAL library calls to control
@@ -20,5 +20,7 @@ void lab1_main(void) {
         // Toggle the output state of both PC8 and PC9
         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
         
-    } 
+    }
+
+    return 0; 
 }
