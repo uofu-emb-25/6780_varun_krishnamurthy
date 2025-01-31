@@ -9,8 +9,11 @@ int lab1_main(void) {
        the GPIOC peripheral. You’ll be redoing this code
        with hardware register access. */
 
-    __HAL_RCC_GPIOC_CLK_ENABLE(); // Enable the GPIOC clock in the RCC
+    //__HAL_RCC_GPIOC_CLK_ENABLE(); // Enable the GPIOC clock in the RCC
+    My_HAL_RCC_GPIOC_CLK_ENABLE();
 
+
+    
     // Set up a configuration struct to pass to the initialization function
     GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
                                 GPIO_MODE_OUTPUT_PP,
