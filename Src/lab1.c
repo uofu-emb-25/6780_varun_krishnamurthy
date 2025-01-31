@@ -21,6 +21,16 @@ int lab1_main(void) {
 
     HAL_GPIO_Init(GPIOC, &initStr); // Initialize pins PC8 & PC9
 
+    //Checking if the pins are in General purpose output mode
+    assert(((GPIOC->MODER >> 16) & 0x03) == 0x01);
+    assert(((GPIOC->MODER >> 18) & 0x03) == 0x01);
+
+    //Checking if the pins are in low speed
+    assert(((GPIOC->OSPEEDR >> 16) & 0x03) == 0x00); 
+    assert(((GPIOC->OSPEEDR >> 18) & 0x03) == 0x00); 
+
+    
+
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET); // Start PC8 high
     while (1) {
         HAL_Delay(200); // Delay 200ms
