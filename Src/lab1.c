@@ -7,14 +7,14 @@
 #define CUSTOM_HAL_FUNCTION
 
 //Comment this to revert back to ORAGNE & GREEN LED.
-#define NEW_LED
+//#define NEW_LED
 
 /**Enable this or disable to check assert statements.
 Applicable only to OLD LEDS**/
-#define ASSERT 0
+#define ASSERT 1
 
-//Enable this to activate button
-//#define LED
+//Enable this to Deactivate button
+#define LED
 
 uint16_t GPIO_PIN_A;
 uint16_t GPIO_PIN_B;
@@ -53,7 +53,7 @@ int lab1_main(void)
 
     #ifdef CUSTOM_HAL_FUNCTION
     My_HAL_GPIO_Init(GPIOC, &initStr);
-    #elif
+    #else
     HAL_GPIO_Init(GPIOC, &initStr); // Initialize pins PC8 & PC9
     #endif
 
