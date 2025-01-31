@@ -34,16 +34,27 @@ int lab1_main(void) {
     assert(((GPIOC->PUPDR >> 16) & 0x03) == 0x00);
     assert(((GPIOC->PUPDR >> 18) & 0x03) == 0x00);
 
-
-    
-
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET); // Start PC8 high
+    //Checking if the bit is actually set
+    assert(((GPIOC->ODR >> 8) & 0x01) == 0x01);
+
+    int count = 0;
+
     while (1) {
         HAL_Delay(200); // Delay 200ms
         // Toggle the output state of both PC8 and PC9
         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
+        count++;
+        if (count % 2 == 0){
+            assert(((GPIOC->ODR >> 8) & 0x01) == 0x01);
+            assert(((GPIOC->ODR >> 9) & 0x01) == 0x00);
+        }
+
+        else  {
+            assert(((GPIOC->ODR >> 8) & 0x01) == 0x00);
+            assert(((GPIOC->ODR >> 9) & 0x01) == 0x01);
+        }
 
     }
-
     return 0;
 }
