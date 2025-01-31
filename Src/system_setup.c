@@ -87,6 +87,11 @@ void assert_failed(uint8_t* file, uint32_t line)
 }
 #endif
 
+
+// void My_HAL_RCC_GPIOC_CLK_ENABLE(void){
+  
+// }
+
 /* These implement libc system calls that a referenced but not used, which causes a linker error. */
 void _close(void) { Error_Handler(); }
 void _lseek(void) { Error_Handler(); }
