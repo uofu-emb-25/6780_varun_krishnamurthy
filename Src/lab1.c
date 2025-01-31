@@ -22,12 +22,18 @@ int lab1_main(void) {
     HAL_GPIO_Init(GPIOC, &initStr); // Initialize pins PC8 & PC9
 
     //Checking if the pins are in General purpose output mode
+    //Pin 8 and Pin 9 accordingly
     assert(((GPIOC->MODER >> 16) & 0x03) == 0x01);
     assert(((GPIOC->MODER >> 18) & 0x03) == 0x01);
 
     //Checking if the pins are in low speed
     assert(((GPIOC->OSPEEDR >> 16) & 0x03) == 0x00); 
     assert(((GPIOC->OSPEEDR >> 18) & 0x03) == 0x00); 
+
+    // Checking if pins are actually in no_pull-up or pull down
+    assert(((GPIOC->PUPDR >> 16) & 0x03) == 0x00);
+    assert(((GPIOC->PUPDR >> 18) & 0x03) == 0x00);
+
 
     
 
