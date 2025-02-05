@@ -70,9 +70,17 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
+//volatile int count = 0;
 void SysTick_Handler(void)
 {
     HAL_IncTick();
+    static int count = 0;
+    count++;
+    if (count == 200){
+      HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+      count = 0;
+    }
+
 }
 
 /******************************************************************************/
