@@ -116,6 +116,7 @@ void My_EXTI_INRPT(void){
     assert(SYSCFG->EXTICR[0] == 0x0000); 
 
     NVIC_EnableIRQ(EXTI0_1_IRQn);
+    
     //Task 3 makes the priority level to 3.
     NVIC_SetPriority(EXTI0_1_IRQn, 3);
 }
