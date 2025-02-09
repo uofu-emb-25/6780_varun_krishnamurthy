@@ -6,6 +6,12 @@
 void EXTI0_1_IRQHandler(void){
     EXTI->PR = (1 << 0); //Clearing the flag
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
+
+    //TASK2
+    volatile uint32_t delay_count = 1500000;
+    while (delay_count--) {
+    }
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9);
 }
 
 int lab2_main(void){
@@ -25,6 +31,9 @@ int lab2_main(void){
     //Button Interrupt
     My_EXTI_INRPT();
 
+    //Task 3
+    NVIC_EnableIRQ(SysTick_IRQn);
+    NVIC_SetPriority(SysTick_IRQn, 2);
     while (1)
     {
         HAL_Delay(400);

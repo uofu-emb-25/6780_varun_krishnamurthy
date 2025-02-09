@@ -97,7 +97,7 @@ void My_EXTI_INRPT(void){
 
     GPIOA->PUPDR &= ~(0x03 << (0 * 2));  // Clear the bits
     GPIOA->PUPDR |= (0x02 << (0 * 2));   // Enable pull-down resistor
-    
+
 
     assert(EXTI->IMR == 0x7F840000); // Default Values
     assert(EXTI->RTSR == 0x00000000);
@@ -116,5 +116,6 @@ void My_EXTI_INRPT(void){
     assert(SYSCFG->EXTICR[0] == 0x0000); 
 
     NVIC_EnableIRQ(EXTI0_1_IRQn);
-    NVIC_SetPriority(EXTI0_1_IRQn, 1);
+    //Task 3 makes the priority level to 3.
+    NVIC_SetPriority(EXTI0_1_IRQn, 3);
 }
