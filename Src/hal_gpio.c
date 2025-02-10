@@ -81,14 +81,6 @@ void My_HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 
 void My_EXTI_INRPT(void){
     //Button
-    // __HAL_RCC_GPIOA_CLK_ENABLE(); 
-    
-    // GPIO_InitTypeDef initStr = {GPIO_PIN_0,
-    //                             GPIO_MODE_INPUT,
-    //                             GPIO_SPEED_FREQ_LOW,
-    //                             GPIO_NOPULL};
-
-    // My_HAL_GPIO_Init(GPIOA, &initStr); 
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     GPIOA->MODER &= ~(0x03 << (0 * 2)); // Clear the bits
     GPIOA->MODER &= ~(0x03 << (0 * 2)); // Set PA0 to input mode
