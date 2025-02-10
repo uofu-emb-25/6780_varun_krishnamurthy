@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <stm32f0xx_hal.h>
 #include <stm32f0xx_hal_gpio.h>
-
+#include "hal_gpio.h"
+#include "assert.h"
 
 void My_HAL_GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_Init)
 {
@@ -77,3 +78,45 @@ void My_HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 }
 
 
+
+void My_EXTI_INRPT(void){
+    //Button
+    // __HAL_RCC_GPIOA_CLK_ENABLE(); 
+    
+    // GPIO_InitTypeDef initStr = {GPIO_PIN_0,
+    //                             GPIO_MODE_INPUT,
+    //                             GPIO_SPEED_FREQ_LOW,
+    //                             GPIO_NOPULL};
+
+    // My_HAL_GPIO_Init(GPIOA, &initStr); 
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    GPIOA->MODER &= ~(0x03 << (0 * 2)); // Clear the bits
+    GPIOA->MODER &= ~(0x03 << (0 * 2)); // Set PA0 to input mode
+
+    GPIOA->OSPEEDR &= ~(0x03 << (0 * 2));  // Clear the bits for PA0 and set to low speed
+
+    GPIOA->PUPDR &= ~(0x03 << (0 * 2));  // Clear the bits
+    GPIOA->PUPDR |= (0x02 << (0 * 2));   // Enable pull-down resistor
+
+
+    assert(EXTI->IMR == 0x7F840000); // Default Values
+    assert(EXTI->RTSR == 0x00000000);
+
+    SYSCFG->EXTICR[1] &= (uint16_t)~SYSCFG_EXTICR1_EXTI0_PA;
+    EXTI->IMR = 0x0001;
+    EXTI->RTSR = 0x0001;
+
+    assert(EXTI->IMR == 0x0001);
+    assert(EXTI->RTSR == 0x0001);
+
+    RCC->APB2ENR |= (1 << 0); //Enable clock to SYSCFG peripheral
+
+    assert(SYSCFG->EXTICR[0] == 0x0000); //by default its enabled
+    SYSCFG->EXTICR[0] = 0x0000; //Still changing and checking
+    assert(SYSCFG->EXTICR[0] == 0x0000); 
+
+    NVIC_EnableIRQ(EXTI0_1_IRQn);
+    
+    //Task 3 makes the priority level to 3.
+    NVIC_SetPriority(EXTI0_1_IRQn, 3);
+}

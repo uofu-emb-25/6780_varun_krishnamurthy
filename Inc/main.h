@@ -5,6 +5,7 @@ void SystemClock_Config(void);
 
 //Custom Function
 void My_HAL_RCC_GPIOC_CLK_ENABLE(void);
+void My_EXTI_INRPT(void);
 
 //Lab Function calls
 int lab1_main(void);
