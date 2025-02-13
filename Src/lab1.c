@@ -11,7 +11,7 @@
 
 /**Enable this or disable to check assert statements.
 Applicable only to OLD LEDS**/
-#define ASSERT 0
+#define ASSERT 1
 
 //Enable this to Deactivate button
 #define LED
