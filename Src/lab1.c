@@ -1,6 +1,6 @@
 #include <stm32f0xx_hal.h>
 #include "main.h"
-#include "assert.h"
+//#include "assert.h"
 #include "hal_gpio.h"
 
 // Comment this to revert the function back to use the original HAL functions
@@ -11,7 +11,7 @@
 
 /**Enable this or disable to check assert statements.
 Applicable only to OLD LEDS**/
-#define ASSERT 1
+#define ASSERT 0
 
 //Enable this to Deactivate button
 #define LED
