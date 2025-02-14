@@ -86,7 +86,7 @@ void tim_3(){
     TIM3->CR1 = TIM_CR1_ARPE | TIM_CR1_CEN;
 
     //Assigning this value so that both LED's are dim(According to TA)
-    TIM3->CCR1 = 1;
+    TIM3->CCR1 = 99;
     TIM3->CCR2 = 1;
 
     //Clear and set to alternate function mode 
