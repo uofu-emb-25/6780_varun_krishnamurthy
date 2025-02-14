@@ -5,7 +5,7 @@
 
 void init(void){
     HAL_Init();
-    SystemClock_Config();
+    //SystemClock_Config();
     __HAL_RCC_GPIOC_CLK_ENABLE(); 
 
     GPIO_InitTypeDef initStr = {GPIO_PIN_8 | GPIO_PIN_9,
@@ -24,6 +24,8 @@ void TIM2_IRQHandler(void){
     TIM2->SR &= ~0x0001;
 
 
+    //This is used to set the PWM duty cycle(from reference solution)
+    #if(0)
     static uint8_t dir = 1;
     static uint8_t value = 0;
 
@@ -38,6 +40,7 @@ void TIM2_IRQHandler(void){
     }
     TIM3->CCR1 = value;
     TIM3->CCR2 = value;
+    #endif
 }
 
 
@@ -82,9 +85,9 @@ void tim_3(){
     //Enable preload and start timer
     TIM3->CR1 = TIM_CR1_ARPE | TIM_CR1_CEN;
 
-    //20% of ARR(100) = 250
-    TIM3->CCR1 = 25;
-    TIM3->CCR2 = 25;
+    //Assigning this value so that both LED's are dim(According to TA)
+    TIM3->CCR1 = 1;
+    TIM3->CCR2 = 1;
 
     //Clear and set to alternate function mode 
     GPIOC->MODER |= ((1 << 15) | (1 << 13));
@@ -99,5 +102,5 @@ int lab3_main(void){
     while(1){
         __WFI();
     }
-    return 1;
+    return 0;
 }
