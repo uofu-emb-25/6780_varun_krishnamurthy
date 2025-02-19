@@ -19,7 +19,6 @@ void init_lab4(void){
     //Set the alternate function to AF1
     GPIOC->AFR[0] |= ((1 << 20) | (1 << 16));
 
-
     //Clock enable to USART3
     RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
 
@@ -36,7 +35,7 @@ void init_lab4(void){
 // Function to transmit a character
 void transmit_char(char c){
     while(!(USART3->ISR & USART_ISR_TXE)){
-}
+    }
     USART3->TDR = c;
 }
 
@@ -49,11 +48,9 @@ void  transmit_string(char *str) {
 }
 
 void led_on(void){
-    if (USART3->ISR & USART_ISR_RXNE)
-    {
+    if (USART3->ISR & USART_ISR_RXNE){
     char received = USART3->RDR;
-    switch (received)
-    {
+    switch (received){
         case 'r':
         case 'R':
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
@@ -77,8 +74,8 @@ void led_on(void){
         default:
             transmit_string("Not a valid input\r\n");
             break;
+        }
     }
-}
 }
 
 int lab4_main(void){
