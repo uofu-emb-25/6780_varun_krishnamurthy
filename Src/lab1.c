@@ -1,6 +1,6 @@
 #include <stm32f0xx_hal.h>
 #include "main.h"
-//#include "assert.h"
+#include "assert.h"
 #include "hal_gpio.h"
 
 // Comment this to revert the function back to use the original HAL functions
