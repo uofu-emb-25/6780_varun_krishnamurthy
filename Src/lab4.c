@@ -7,10 +7,10 @@ void init_lab4(void){
     SystemClock_Config();
     __HAL_RCC_GPIOC_CLK_ENABLE(); 
 
-    GPIO_InitTypeDef initStr = {GPIO_PIN_6,
-                                GPIO_MODE_OUTPUT_PP,
-                                GPIO_SPEED_FREQ_LOW,
-                                GPIO_NOPULL};
+    GPIO_InitTypeDef initStr = {GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9,
+        GPIO_MODE_OUTPUT_PP,
+        GPIO_SPEED_FREQ_LOW,
+        GPIO_NOPULL};
 
     HAL_GPIO_Init(GPIOC, &initStr);
 
@@ -36,8 +36,7 @@ void init_lab4(void){
 // Function to transmit a character
 void transmit_char(char c){
     while(!(USART3->ISR & USART_ISR_TXE)){
-        //empty loop
-    }
+}
     USART3->TDR = c;
 }
 
@@ -49,10 +48,42 @@ void  transmit_string(char *str) {
     }
 }
 
+void led_on(void){
+    if (USART3->ISR & USART_ISR_RXNE)
+    {
+    char received = USART3->RDR;
+    switch (received)
+    {
+        case 'r':
+        case 'R':
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
+            break;
+
+        case 'b':
+        case 'B':
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+            break;
+
+        case 'o':
+        case 'O':
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+            break;
+
+        case 'g':
+        case 'G':
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
+            break;
+        
+        default:
+            transmit_string("Not a valid input\r\n");
+            break;
+    }
+}
+}
+
 int lab4_main(void){
     init_lab4();
     while(1){
-        transmit_string("Testing String\r\n");
-        HAL_Delay(100);
+        led_on();
     }
 }
