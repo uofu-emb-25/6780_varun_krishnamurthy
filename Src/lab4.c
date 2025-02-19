@@ -2,6 +2,9 @@
 #include "main.h"
 #include "stm32f072xb.h"
 
+#define TASK1 0
+#define TASK2 1
+
 // Global variables
 volatile uint8_t received_data[2];
 volatile uint8_t flag = 0;
@@ -167,13 +170,15 @@ void led_operation(char c, uint8_t operation){
 int lab4_main(void){
     init_lab4();
 
-    //For Task1 TA
-    #if(0)
+    //Task1 - Turn on the LED based on the letter input
+    #if TASK1
     while(1){
         led_on();
     }
     #endif
 
+    //Task2 - Turn on the LED based on the letter input and the number input for turning on/off/toggle
+    #if TASK2
     transmit_string("Select colour (r,g,b,o)\r\n");
     while(1){
         if(flag){
@@ -182,5 +187,7 @@ int lab4_main(void){
             transmit_string("Select colour (r,g,b,o)\r\n");
         } 
     }
+    #endif
+    
     return 0;  
 }
