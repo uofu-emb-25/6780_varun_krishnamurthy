@@ -12,7 +12,7 @@ void init_lab4(void){
                                 GPIO_SPEED_FREQ_LOW,
                                 GPIO_NOPULL};
 
-    My_HAL_GPIO_Init(GPIOC, &initStr);
+    HAL_GPIO_Init(GPIOC, &initStr);
 
     //Set the pins PC4 and PC5 to alternate function 
     GPIOC->MODER |= ((1 << 11) | (1 << 9));
@@ -23,6 +23,7 @@ void init_lab4(void){
     //Clock enable to USART3
     RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
 
+    //Set the baud rate to 115200
     USART3->BRR = HAL_RCC_GetHCLKFreq() / 115200;
 
     //Enable the transmitter and receiver
@@ -32,19 +33,26 @@ void init_lab4(void){
     USART3->CR1 |= USART_CR1_UE;
 }
 
+// Function to transmit a character
 void transmit_char(char c){
     while(!(USART3->ISR & USART_ISR_TXE)){
-        My_HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
+        //empty loop
     }
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
     USART3->TDR = c;
 }
 
+// Function to transmit a string of characters
+void  transmit_string(char *str) {
+    while (*str != '\0') {
+        transmit_char(*str);
+        str++; 
+    }
+}
 
 int lab4_main(void){
     init_lab4();
     while(1){
-        transmit_char('H');
+        transmit_string("Testing String\r\n");
         HAL_Delay(100);
     }
 }
