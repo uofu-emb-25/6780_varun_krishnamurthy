@@ -60,18 +60,57 @@ void  transmit_string(char *str) {
     }
 }
 
+int check_char(char c){
+    if(c != 'r' && c != 'R' && c != 'b' && c != 'B' && c != 'o' && c != 'O' && c != 'g' && c != 'G'){
+        return 0;
+    }
+    return 1;
+}
+
+int check_number(char c){
+    if(c != '0' && c != '1' && c != '2'){
+        return 0;
+    }
+    return 1;
+}
+
 //USART3_4_IRQHandler
 void USART3_4_IRQHandler(void){
     if (USART3->ISR & USART_ISR_RXNE) {
         static uint8_t i = 0;
         received_data[i] = USART3->RDR;
         i++;
-        if(i == 1){
-            transmit_string("Pin Action Number(0:OFF, 1:ON, 2:TOGGLE)\r\n");
+
+        //Check if the input is valid or restart the process
+        if (i == 1){
+            if(check_char((char)received_data[0])){
+                transmit_string(" Selected colour: ");
+                transmit_char((char)received_data[0]);
+                transmit_string("\r\n");
+                transmit_string("Pin Action Number(0:OFF, 1:ON, 2:TOGGLE)\r\n");
+            }
+            else{
+                transmit_string("Not a valid input\r\n");
+                transmit_string("Select colour (r,g,b,o)\r\n");
+                i = 0;
+            }
         }
-        if (i == 2){
-            i = 0;
-            flag = 1;
+ 
+        //Check if the input is valid or restart the process
+        if(i == 2){
+            if (check_number(received_data[1])){
+                i = 0;
+                flag = 1;
+                transmit_string("Selected action: ");
+                transmit_char((char)received_data[1]);
+                transmit_string("\r\n");
+            }
+            else
+            {
+                transmit_string("Not a valid input\r\n");
+                transmit_string("Pin Action Number(0:OFF, 1:ON, 2:TOGGLE)\r\n");
+                i = 1;
+            }
         }
     }
 }
