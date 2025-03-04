@@ -6,7 +6,7 @@ uint8_t sensor_slave_Address = 0x6B;
 uint8_t who_am_i_register = 0x0F;
 uint8_t who_am_i_value = 0xD4;
 
-void init(void){
+void init_lab5(void){
     // Enable the GPIOC clock
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN| RCC_AHBENR_GPIOCEN;
     // Set PB11 and PB13 to alternate function mode
@@ -33,7 +33,7 @@ void init(void){
 
 }
 
-void led_init(void){
+void led_init_lab5(void){
     HAL_Init();
     //SystemClock_Config();
 
@@ -58,9 +58,9 @@ void i2c_paramters(char operation){
     I2C2->CR2 |= I2C_CR2_START; // Set the start bit  
 }
 
-void main(void){
-    init();
-    led_init();
+int lab5_main(void){
+    init_lab5();
+    led_init_lab5();
     i2c_paramters('w');
 
     // Checking flags TXIS or NACKF
@@ -109,6 +109,10 @@ void main(void){
             HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
             HAL_Delay(1000);
         }
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
 
     }
     else{
@@ -120,4 +124,6 @@ void main(void){
 
     // Stop the I2C communication
     I2C2->CR2 |= I2C_CR2_STOP;
+
+    return 0;
 }
