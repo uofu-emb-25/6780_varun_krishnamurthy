@@ -5,6 +5,7 @@
 uint8_t sensor_slave_Address = 0x69;
 uint8_t who_am_i_register = 0x0F;
 uint8_t who_am_i_value = 0xD3;
+uint8_t ctrl_reg1 = 0x20;
 
 void init_lab5(void){
     HAL_Init();
@@ -61,72 +62,133 @@ void i2c_paramters(char operation){
     I2C2->CR2 |= I2C_CR2_START; // Set the start bit  
 }
 
-int lab5_main(void){
-    init_lab5();
+void write_gyro_i2c(uint8_t register_address, uint8_t value){
+    I2C2->TXDR = register_address;
+    //Waiting for TC flag to be set
+    while (!(I2C2->ISR & I2C_ISR_TC)) {
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+    }
     i2c_paramters('w');
 
-    // Checking flags TXIS or NACKF
-    while (!(I2C2->ISR & (I2C_ISR_TXIS | I2C_ISR_NACKF))) {}
-
-    // If NACKF
-    if (I2C2->ISR & I2C_ISR_NACKF) {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
-        while(1) {
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
-            HAL_Delay(1000);
+    I2C2->TXDR = value;
+    //Waiting for TC flag to be set
+    while (!(I2C2->ISR & I2C_ISR_TC)) {
+        // If NACKF
+        if (I2C2->ISR & I2C_ISR_NACKF) {
+            while(1) {
+                HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+            }
         }
     }
 
-    //Send the register address
-    I2C2->TXDR = who_am_i_register;
+    I2C2->TXDR = value;
+    //Waiting for TC flag to be set
+    while (!(I2C2->ISR & I2C_ISR_TC)) {
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+    }
+    i2c_paramters('w');
+
+    I2C2->TXDR = value;
+    //Waiting for TC flag to be set
+    while (!(I2C2->ISR & I2C_ISR_TC)) {
+        // If NACKF
+        if (I2C2->ISR & I2C_ISR_NACKF) {
+            while(1) {
+                HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+            }
+        }
+    }
+}
+
+uint8_t read_gyro_i2c(uint8_t register_address){
+    I2C2->TXDR = register_address;
     //Waiting for TC flag to be set
     while (!(I2C2->ISR & I2C_ISR_TC)) {}
-
     i2c_paramters('r');
 
-    // Checking flags RXNE or NACKF
     while (!(I2C2->ISR & (I2C_ISR_RXNE | I2C_ISR_NACKF))) {}
 
     // If NACKF 
     if (I2C2->ISR & I2C_ISR_NACKF) {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
         while(1) {
             HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
         }
     }
 
-    // Checking TC Flag
-    while (!(I2C2->ISR & I2C_ISR_TC)) {}
+    return I2C2->RXDR;
+}
 
-    if(I2C2->RXDR == who_am_i_value){
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
-        int i = 0;
-        while(i < 10){
-            i++;
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
-            HAL_Delay(1000);
-        }
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
+int lab5_main(void){
+    init_lab5();
+    i2c_paramters('w');
 
-    }
-    else{
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
-    } 
+    // // Task 1
+    // // Checking flags TXIS or NACKF
+    // while (!(I2C2->ISR & (I2C_ISR_TXIS | I2C_ISR_NACKF))) {}
 
-    // Stop the I2C communication
-    I2C2->CR2 |= I2C_CR2_STOP;
+    // // If NACKF
+    // if (I2C2->ISR & I2C_ISR_NACKF) {
+    //     while(1) {
+    //         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
+    //         HAL_Delay(1000);
+    //     }
+    // }
+
+    // //Send the register address
+    // I2C2->TXDR = who_am_i_register;
+    // //Waiting for TC flag to be set
+    // while (!(I2C2->ISR & I2C_ISR_TC)) {}
+
+    // i2c_paramters('r');
+
+    // // Checking flags RXNE or NACKF
+    // while (!(I2C2->ISR & (I2C_ISR_RXNE | I2C_ISR_NACKF))) {}
+
+    // // If NACKF 
+    // if (I2C2->ISR & I2C_ISR_NACKF) {
+    //     while(1) {
+    //         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+    //     }
+    // }
+
+    // // Checking TC Flag
+    // while (!(I2C2->ISR & I2C_ISR_TC)) {}
+
+    // if(I2C2->RXDR == who_am_i_value){
+    //     int i = 0;
+    //     //Blinks the LED 5 times after successful communication
+    //     while(i < 10){
+    //         i++;
+    //         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
+    //         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+    //         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+    //         HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_9);
+    //         HAL_Delay(1000);
+    //     }
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
+
+    // }
+    // else{
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+    //     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
+    // } 
+
+    // // Stop the I2C communication
+    // I2C2->CR2 |= I2C_CR2_STOP;
+
+    // Task 2
+    //Gyroscope LED Code
+    // Default x and y axis are enabled so we will be skipping that part and put the sensor into normal or sleep mode
+    uint8_t read_data = 0;
+    read_data = read_gyro_i2c(ctrl_reg1);
+    write_gyro_i2c(ctrl_reg1, read_data | 0x08);
+
+    //I2C2->CR2 |= I2C_CR2_STOP;
 
     return 0;
 }
