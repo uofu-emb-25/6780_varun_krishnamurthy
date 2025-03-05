@@ -2,11 +2,18 @@
 #include "main.h"
 #include "stm32f072xb.h"
 
-uint8_t sensor_slave_Address = 0x6B;
+uint8_t sensor_slave_Address = 0x69;
 uint8_t who_am_i_register = 0x0F;
-uint8_t who_am_i_value = 0xD4;
+uint8_t who_am_i_value = 0xD3;
 
 void init_lab5(void){
+    HAL_Init();
+    SystemClock_Config();
+    GPIO_InitTypeDef initStr = {GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9,
+        GPIO_MODE_OUTPUT_PP,
+        GPIO_SPEED_FREQ_LOW,
+        GPIO_NOPULL};
+
     // Enable the GPIOC clock
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN| RCC_AHBENR_GPIOCEN;
     // Set PB11 and PB13 to alternate function mode
@@ -19,10 +26,17 @@ void init_lab5(void){
     GPIOB->OTYPER |= (1 << 13);
     // PB14 configuration
     GPIOB->MODER |= (1 << 28);
+    // PB14 to push-pull
+    GPIOB->OTYPER &= ~(1 << 14);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
     // PC0 configuration
     GPIOC->MODER |= (1 << 0);
+    // PC0 to push-pull
+    GPIOC->OTYPER &= ~(1 << 0);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+
+    //Set PB15 to input mode
+    GPIOB->MODER &= ~(3 << 30);
 
     // Enable the I2C2 peripheral clock
     RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
@@ -30,17 +44,6 @@ void init_lab5(void){
     I2C2->TIMINGR =  0x00010402;
     // Enable the I2C2 peripheral
     I2C2->CR1 |= I2C_CR1_PE;
-
-}
-
-void led_init_lab5(void){
-    HAL_Init();
-    //SystemClock_Config();
-
-    GPIO_InitTypeDef initStr = {GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9,
-        GPIO_MODE_OUTPUT_PP,
-        GPIO_SPEED_FREQ_LOW,
-        GPIO_NOPULL};
 
     HAL_GPIO_Init(GPIOC, &initStr);
 }
@@ -60,7 +63,6 @@ void i2c_paramters(char operation){
 
 int lab5_main(void){
     init_lab5();
-    led_init_lab5();
     i2c_paramters('w');
 
     // Checking flags TXIS or NACKF
@@ -71,6 +73,7 @@ int lab5_main(void){
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_SET);
         while(1) {
             HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_6);
+            HAL_Delay(1000);
         }
     }
 
