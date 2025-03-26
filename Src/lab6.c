@@ -2,6 +2,14 @@
 #include "main.h"
 #include "stm32f072xb.h"
 
+#define ADC 0
+#define DAC 1
+
+const uint8_t triangle_table[32] = {0,15,31,47,63,79,95,111,127,142,158,174,
+    190,206,222,238,254,238,222,206,190,174,158,142,127,111,95,79,63,47,31,15};   
+
+const uint8_t sine_table[32] = {127,151,175,197,216,232,244,251,254,251,244,
+    232,216,197,175,151,127,102,78,56,37,21,9,2,0,2,9,21,37,56,78,102};
 
 void led_init(){
     GPIO_InitTypeDef initStr = {GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9,
@@ -86,6 +94,15 @@ void adc_led(uint32_t adc_value){
     }
 }
 
+void dac_init(){
+    //PA4 Pin for DAC_OUT1
+    GPIOA->MODER |= ((1 << 8) | (1 << 9));
+    RCC->APB1ENR |= RCC_APB1ENR_DACEN; 
+    DAC1->SWTRIGR |= DAC_SWTRIGR_SWTRIG1;
+    DAC1->CR |= DAC_CR_EN1;
+}
+
+
 
 int lab6_main(void){
     HAL_Init();
@@ -98,12 +115,27 @@ int lab6_main(void){
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
 
+    #if ADC
     uint32_t adc_value = 0;
-
     while(1){
         adc_value = ADC1->DR;
         HAL_Delay(100);
         adc_led(adc_value);
     }
+    #endif
+
+    #if DAC
+    dac_init();
+    uint8_t i = 0;
+    while(1){
+        DAC1->DHR8R1 = triangle_table[i];
+        HAL_Delay(1);
+        i++;
+        if (i==32){
+            i = 0;
+        }
+    }
+    #endif
+
     return 0;
 }
