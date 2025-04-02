@@ -84,6 +84,10 @@ void SysTick_Handler(void)
     //   count = 0;
     // }
 
+    #if defined(LAB7) 
+      Lab7_Systick_Callback();
+    #endif
+
 }
 
 /******************************************************************************/
